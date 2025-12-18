@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 5ca0e2d8bc494336b2737f0184e4372c
+PrefabImporter:
+  externalObjects: {}
+  userData:
+  assetBundleName:
+  assetBundleVariant:
+  assetBundleChecksum:
+  assetBundleHash:
+  assetBundleManifestRoot:
+  script: {instanceID: 0}
+  serializedVersion: 2
+  icon: {instanceID: 0}
+  variantPrefab: {fileID: 0}
+  simpleMode: 1
+  refinePrefab: 0
+  defaultRefs: {}
