@@ -23,7 +23,7 @@ public class PlayerScratch : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (InputHelper.IsScratchPressedDown())
         {
             StartScratch();
         }

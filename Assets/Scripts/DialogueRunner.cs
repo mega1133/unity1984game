@@ -106,7 +106,7 @@ public class DialogueRunner : MonoBehaviour
                 yield return null;
             }
 
-            while (!Input.GetKeyDown(KeyCode.Space) && !Input.GetKeyDown(KeyCode.Return))
+            while (!InputHelper.IsConfirmPressedDown())
             {
                 yield return null;
             }

@@ -67,7 +67,7 @@ public class InteractionController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (InputHelper.IsInteractPressedDown())
         {
             current.Interact(gameObject);
         }
