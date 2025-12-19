@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 8f;
     [SerializeField] private float jumpForce = 12f;
+    [SerializeField] private float groundedCheckExtraDistance = 0.05f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
@@ -20,13 +21,21 @@ public class PlayerMovement : MonoBehaviour
     private int safeZoneCount;
     private PlayerSuspicionController suspicion;
     private PlayerScratch scratch;
+    private Collider2D col;
+    private ContactFilter2D groundContactFilter;
+    private readonly Collider2D[] contactResults = new Collider2D[4];
+    private float lastJumpPressedTime;
 
     public bool IsControlEnabled => controlEnabled;
     public bool IsInSafeZone => safeZoneCount > 0;
+    public float VelocityY => rb != null ? rb.velocity.y : 0f;
+    public float LastJumpPressedTime => lastJumpPressedTime;
+    public bool DebugIsGrounded => IsGrounded();
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
         suspicion = GetComponent<PlayerSuspicionController>();
         if (suspicion == null)
         {
@@ -38,6 +47,10 @@ public class PlayerMovement : MonoBehaviour
         {
             scratch = gameObject.AddComponent<PlayerScratch>();
         }
+
+        groundContactFilter.useLayerMask = true;
+        groundContactFilter.layerMask = groundLayer;
+        groundContactFilter.useTriggers = false;
     }
 
     private void Update()
@@ -80,11 +93,17 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        lastJumpPressedTime = Time.time;
+
         if (IsGrounded())
         {
             Vector2 velocity = rb.velocity;
             velocity.y = jumpForce;
             rb.velocity = velocity;
+        }
+        else
+        {
+            Debug.Log("Jump pressed while not grounded - check ground setup");
         }
     }
 
@@ -92,10 +111,53 @@ public class PlayerMovement : MonoBehaviour
     {
         if (groundCheck == null)
         {
+            return CheckContacts();
+        }
+
+        if (Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null)
+        {
+            return true;
+        }
+
+        if (CheckContacts())
+        {
+            return true;
+        }
+
+        return CheckBoxCast();
+    }
+
+    private bool CheckContacts()
+    {
+        if (rb == null)
+        {
             return false;
         }
 
-        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
+        int count = rb.OverlapCollider(groundContactFilter, contactResults);
+        for (int i = 0; i < count; i++)
+        {
+            if (contactResults[i] != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool CheckBoxCast()
+    {
+        if (col == null)
+        {
+            return false;
+        }
+
+        Bounds bounds = col.bounds;
+        Vector2 size = new Vector2(bounds.size.x * 0.95f, groundedCheckExtraDistance * 2f);
+        float distance = groundedCheckExtraDistance;
+        RaycastHit2D hit = Physics2D.BoxCast(bounds.center, size, 0f, Vector2.down, distance, groundLayer);
+        return hit.collider != null;
     }
 
     private void OnDrawGizmosSelected()

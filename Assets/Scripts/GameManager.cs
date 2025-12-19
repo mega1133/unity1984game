@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -15,7 +16,10 @@ public class GameManager : MonoBehaviour
     private Coroutine failRoutine;
 
     private Canvas failCanvas;
-    private Text failText;
+    private TextMeshProUGUI failText;
+
+    public bool HasCheckpoint => hasCheckpoint;
+    public string RespawnSceneName => respawnSceneName;
 
     private void Awake()
     {
@@ -37,14 +41,32 @@ public class GameManager : MonoBehaviour
         hasCheckpoint = true;
     }
 
+    public bool HasCheckpointForScene(string sceneName)
+    {
+        return hasCheckpoint && respawnSceneName == sceneName;
+    }
+
     public void Fail(string reason)
     {
         if (!hasCheckpoint)
         {
-            var player = FindPlayer();
-            if (player != null)
+            var spawn = FindObjectOfType<LevelSpawnPoint>();
+            if (spawn != null)
             {
-                SetCheckpoint(player.transform.position);
+                spawn.TrySetCheckpoint();
+            }
+            else
+            {
+                var player = FindPlayer();
+                if (player != null)
+                {
+                    SetCheckpoint(player.transform.position);
+                }
+                else
+                {
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    return;
+                }
             }
         }
 
@@ -125,11 +147,10 @@ public class GameManager : MonoBehaviour
 
         GameObject textObject = new GameObject("FailText");
         textObject.transform.SetParent(canvasObject.transform, false);
-        failText = textObject.AddComponent<Text>();
-        failText.alignment = TextAnchor.MiddleCenter;
-        failText.fontSize = 28;
+        failText = textObject.AddComponent<TextMeshProUGUI>();
+        failText.alignment = TextAlignmentOptions.Center;
+        failText.fontSize = 32;
         failText.color = Color.red;
-        failText.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
         RectTransform rectTransform = failText.rectTransform;
         rectTransform.anchorMin = new Vector2(0.25f, 0.45f);
         rectTransform.anchorMax = new Vector2(0.75f, 0.55f);

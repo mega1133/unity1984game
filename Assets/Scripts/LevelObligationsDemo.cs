@@ -11,6 +11,11 @@ public class LevelObligationsDemo : MonoBehaviour
 
     private IEnumerator DemoRoutine()
     {
+        if (FindObjectOfType<LevelController>() != null)
+        {
+            yield break;
+        }
+
         var ui = ObligationsUI.GetOrCreate();
         ui.Show(true);
         ui.SetObligations(new[]

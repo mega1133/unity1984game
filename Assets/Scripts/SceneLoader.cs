@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    [SerializeField] private string nextSceneName = "Level0_Test";
+    [SerializeField] private string nextSceneName = "Level0_VictoryMansions";
 
     private void Start()
     {

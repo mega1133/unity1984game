@@ -44,10 +44,7 @@ public class LevelTelescreenDemo : MonoBehaviour
         TelescreenController chatterScreen = CreateTelescreen(prefab, chatterScreenPosition, true);
         if (chatterScreen != null)
         {
-            chatterScreen.idleLinesEnabled = true;
-            chatterScreen.idleLines = idleLines;
-            chatterScreen.idleIntervalMin = 4f;
-            chatterScreen.idleIntervalMax = 8f;
+            chatterScreen.ConfigureIdleLines(true, idleLines, 4f, 8f);
 
             CreateLineTrigger(chatterScreen, triggerPosition, triggerLine);
         }
@@ -59,7 +56,7 @@ public class LevelTelescreenDemo : MonoBehaviour
         var controller = instance.GetComponent<TelescreenController>();
         if (controller != null)
         {
-            controller.idleLinesEnabled = idleEnabled;
+            controller.IdleLinesEnabled = idleEnabled;
         }
 
         return controller;

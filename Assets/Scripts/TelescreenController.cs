@@ -19,6 +19,65 @@ public class TelescreenController : MonoBehaviour
     [SerializeField] private float idleIntervalMin = 6f;
     [SerializeField] private float idleIntervalMax = 10f;
 
+    public bool IdleLinesEnabled
+    {
+        get => idleLinesEnabled;
+        set
+        {
+            if (idleLinesEnabled == value)
+            {
+                return;
+            }
+
+            idleLinesEnabled = value;
+            RestartIdleRoutine();
+        }
+    }
+
+    public string[] IdleLines
+    {
+        get => idleLines;
+        set
+        {
+            idleLines = value;
+            RestartIdleRoutine();
+        }
+    }
+
+    public float IdleIntervalMin
+    {
+        get => idleIntervalMin;
+        set
+        {
+            idleIntervalMin = Mathf.Max(0f, value);
+            if (idleIntervalMax < idleIntervalMin)
+            {
+                idleIntervalMax = idleIntervalMin;
+            }
+
+            RestartIdleRoutine();
+        }
+    }
+
+    public float IdleIntervalMax
+    {
+        get => idleIntervalMax;
+        set
+        {
+            idleIntervalMax = Mathf.Max(idleIntervalMin, value);
+            RestartIdleRoutine();
+        }
+    }
+
+    public void ConfigureIdleLines(bool enabled, string[] lines, float intervalMin, float intervalMax)
+    {
+        idleLinesEnabled = enabled;
+        idleLines = lines;
+        idleIntervalMin = Mathf.Max(0f, intervalMin);
+        idleIntervalMax = Mathf.Max(idleIntervalMin, intervalMax);
+        RestartIdleRoutine();
+    }
+
     private AudioSource audioSource;
     private Coroutine idleRoutine;
     private Coroutine bubbleRoutine;
@@ -187,5 +246,16 @@ public class TelescreenController : MonoBehaviour
 
         humClip = AudioClip.Create("HumTone", samples, 1, sampleRate, false);
         humClip.SetData(data, 0);
+    }
+
+    private void RestartIdleRoutine()
+    {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
+        StopIdleRoutine();
+        StartIdleRoutine();
     }
 }

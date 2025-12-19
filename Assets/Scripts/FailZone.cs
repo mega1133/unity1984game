@@ -23,4 +23,9 @@ public class FailZone : MonoBehaviour
             GameManager.Instance.Fail(reason);
         }
     }
+
+    public void SetReason(string newReason)
+    {
+        reason = newReason;
+    }
 }
