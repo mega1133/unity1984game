@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,10 +7,8 @@ public class PlayerDebugOverlay : MonoBehaviour
     private static PlayerDebugOverlay instance;
     public static PlayerDebugOverlay Instance => instance;
 
-    [SerializeField] private KeyCode toggleKey = KeyCode.F1;
-
     private Canvas canvas;
-    private TextMeshProUGUI text;
+    private Text text;
     private bool visible;
     private PlayerMovement player;
 
@@ -45,7 +42,7 @@ public class PlayerDebugOverlay : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(toggleKey))
+        if (InputHelper.IsDebugTogglePressedDown())
         {
             visible = !visible;
             if (canvas != null)
@@ -92,10 +89,10 @@ public class PlayerDebugOverlay : MonoBehaviour
 
         GameObject textObj = new GameObject("DebugText");
         textObj.transform.SetParent(transform, false);
-        text = textObj.AddComponent<TextMeshProUGUI>();
+        text = textObj.AddComponent<Text>();
         text.fontSize = 18;
         text.color = Color.white;
-        text.alignment = TextAlignmentOptions.TopLeft;
+        text.alignment = TextAnchor.UpperLeft;
         text.raycastTarget = false;
 
         RectTransform rect = text.rectTransform;

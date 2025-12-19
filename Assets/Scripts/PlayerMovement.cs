@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private bool diaryOpen;
     private bool previousControlBeforeDiary;
     private int safeZoneCount;
+    private bool jumpDeniedLogged;
     private PlayerSuspicionController suspicion;
     private PlayerScratch scratch;
     private Collider2D col;
@@ -68,14 +69,20 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        bool grounded = IsGrounded();
+        if (grounded)
+        {
+            jumpDeniedLogged = false;
+        }
+
         HandleMovement();
-        HandleJump();
+        HandleJump(grounded);
     }
 
     private void HandleMovement()
     {
-        bool leftPressed = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
-        bool rightPressed = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+        bool leftPressed = InputHelper.IsLeftHeld();
+        bool rightPressed = InputHelper.IsRightHeld();
 
         int direction = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0);
         direction = Mathf.Clamp(direction, -1, 1);
@@ -85,9 +92,9 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = velocity;
     }
 
-    private void HandleJump()
+    private void HandleJump(bool grounded)
     {
-        bool jumpPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow);
+        bool jumpPressed = InputHelper.IsJumpPressedDown();
         if (!jumpPressed)
         {
             return;
@@ -95,15 +102,16 @@ public class PlayerMovement : MonoBehaviour
 
         lastJumpPressedTime = Time.time;
 
-        if (IsGrounded())
+        if (grounded)
         {
             Vector2 velocity = rb.velocity;
             velocity.y = jumpForce;
             rb.velocity = velocity;
         }
-        else
+        else if (!jumpDeniedLogged)
         {
             Debug.Log("Jump pressed while not grounded - check ground setup");
+            jumpDeniedLogged = true;
         }
     }
 
@@ -223,7 +231,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleDiaryOpenInput()
     {
-        if (!Input.GetKeyDown(KeyCode.Q))
+        if (!InputHelper.IsDiaryPressedDown())
         {
             return;
         }
@@ -261,7 +269,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        bool closePressed = Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return);
+        bool closePressed = InputHelper.IsConfirmPressedDown();
         if (!closePressed)
         {
             return;
