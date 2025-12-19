@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ab72ee6c3b471f8b1f09584942cf4f, type: 3}
   m_Name:
   m_EditorClassIdentifier:
-  nextSceneName: Level0_VictoryMansions
+  nextSceneName: Level0_Test
 --- !u!1 &200000
 GameObject:
   m_ObjectHideFlags: 0
